@@ -9,11 +9,11 @@ ID: 1001556177
 #include <unistd.h>
 #include <sys/wait.h>
 #define MAX_STRING 100 // the maximum length of string the command line can take at a time
-pid_t pid_array[100];
-int p_t = 0; // is a pid pointer
-char hist[100][100];
-int hist_p = 0;
-char  cmdarr[5][100];
+pid_t pid_array[100];  // this array stores the pids 
+int p_t = 0; // is a pid pointer to the last element
+char hist[100][100]; // this array stores the history of commands
+int hist_p = 0; // index to the history array 
+char  cmdarr[5][100]; 
 int size_cmd=0;
 int abc=0;
 
@@ -28,33 +28,29 @@ int main(int argc, char**argv){
 
   //Prints msh every line
   printf(" msh>");
-    
-  // Storing the PID
-  //pid_array[p_t] = getpid();
-  //p_t++;
- 
+     
   
    // Taking the input  
      char nth [10];
-     char stri [100];
-     char toks[100][100];  
-     fgets(stri,100,stdin);
+     	char stri [100];
+     		char toks[100][100];  
+     			fgets(stri,100,stdin);
   
   
 
 
   // storing the history 
-  label:   
-  strcpy(hist[hist_p],stri);
-  hist_p++;
+  	label:   
+  		strcpy(hist[hist_p],stri);
+  			hist_p++;
 
 
   //parse
   
   int s_d = 0;
-  int j = 0;
-  int control = 0;
-  int len = strlen(stri);
+  	int j = 0;
+  		int control = 0;
+  			int len = strlen(stri);
   
 
   
@@ -91,7 +87,7 @@ int main(int argc, char**argv){
 
 
  int ret = strcmp(toks[0],"mkdir");
- int status;
+ 	int status;
 
 
  if(ret == 0)
@@ -103,12 +99,12 @@ int main(int argc, char**argv){
   if(pid==0)
    {
     char* args[]={"mkdir",toks[1], NULL};
-    status = execvp("mkdir",args);
+    	status = execvp("mkdir",args);
     }
    else
    {
     pid_array[p_t] = pid;
-    p_t++;
+    	p_t++;
    }
  }
  
@@ -143,29 +139,26 @@ if(ret == 0){
 }    
 //  
   bbh:
-  ret = strcmp(toks[0],"cd");
+  	ret = strcmp(toks[0],"cd");
   
   
   if(ret == 0)
   {
-      abc = 1;
-     int ret2 = strcmp(toks[1],"..");     
-     if(ret2==0)
-     {
+     abc = 1;
+     	int ret2 = strcmp(toks[1],"..");     
+     		if(ret2==0)
+     			{
 
-       chdir("..");
-       pid_array[p_t] = getpid();
-       p_t++;
-       
-       //printf("argue is : %s",toks[1]);
-     }
-     else
-     {
-
-       chdir(toks[1]);
-       pid_array[p_t] = getpid();
-       p_t++;
-     }
+       			chdir("..");
+       				pid_array[p_t] = getpid();
+       					p_t++;
+     			}
+     		else
+     			{
+       				chdir(toks[1]);
+       					pid_array[p_t] = getpid();
+       						p_t++;
+     			}
    }
 // implimentig the exit function 
 ret = strcmp(toks[0],"exit");
@@ -216,10 +209,10 @@ if(ret==0)
        }
       }
          printf("\n");
-          printf("msh> ");
-           char ee[10];
-           char eee[10]; 
-           fgets(ee,10,stdin);
+         	 printf("msh> ");
+           		char ee[10];
+           			char eee[10]; 
+           				fgets(ee,10,stdin);
            if(ee[0] == '!')
              {
               
@@ -243,7 +236,9 @@ ret = strcmp(toks[0],"");
 if(ret == 0){
  abc = 1; 
 }
-    ret = strcmp(toks[0],"echo");
+    
+
+ret = strcmp(toks[0],"echo");
  if(ret == 0)
  {
    abc = 1;   
@@ -261,8 +256,21 @@ if(ret == 0){
     p_t++;
    }
  }
-//
 
+//
+// Takes care of all other command in the /bin/local directory
+if(abc!=1)
+  {
+    int pid = fork();
+     if(pid==0)
+   {
+    char* args[]={toks[0],toks[1], NULL};
+    execvp(toks[0],args);
+   }
+  }
+
+
+// prints command not found 
 if(abc != 1){
 printf("\n Command not found \n");
 }
